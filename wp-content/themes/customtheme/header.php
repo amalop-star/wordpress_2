@@ -11,11 +11,17 @@
 
 <body <?php body_class(); ?>>
     <main>
-       
+
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="<?php echo home_url(); ?>">
-                    <img src="<?php echo get_template_directory_uri(); ?>/images/coffee-beans.png" class="navbar-brand-image img-fluid" alt="Logo">
+                    <?php
+                    if (function_exists('the_custom_logo')) {
+                        the_custom_logo();
+                    } else { ?>
+                        <img src="<?php echo get_template_directory_uri(); ?>/images/coffee-beans.png" alt="Logo">
+                    <?php } ?>
+                        
                     <?php bloginfo('name'); ?>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,34 +29,15 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-lg-auto">
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_1">Home</a>
-                        </li>
+                    <?php
+                    wp_nav_menu([
+                        'theme_location' => 'primary_menu',
+                        'container'      => false,
+                        'menu_class'     => 'navbar-nav ms-lg-auto gap-3',
+                        'fallback_cb'    => false,
+                    ]);
+                    ?>
 
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_2">About</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_3">Our Menu</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_4">Reviews</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_5">Contact</a>
-                        </li>
-                    </ul>
-
-                    <div class="ms-lg-3">
-                        <a class="btn custom-btn custom-border-btn" href="reservation.html">
-                            Reservation
-                            <i class="bi-arrow-up-right ms-2"></i>
-                        </a>
-                    </div>
                 </div>
             </div>
         </nav>

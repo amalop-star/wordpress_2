@@ -1,0 +1,393 @@
+/*
+Theme Name: SimpleHomepage
+Theme URI: https://github.com/irvirty/irvirty.pages.dev/tree/main/pages/wordpress-themes/simplehomepage/
+Author: Irvirty
+Author URI: https://github.com/irvirty
+Text Domain: simplehomepage
+Description: An experimental, lightweight WordPress theme. It features a clean, flat, and minimalist design with a bright, light color palette. You can use it to create a blog, personal site, or microblog. (Note: Supports only a single-level navigation menu. Background with a random picture.) 
+Version: 7.24.7
+Tested up to: 6.8
+Requires PHP: 7.2
+License:  GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: blog, one-column, custom-menu, footer-widgets, custom-logo, sticky-post, threaded-comments, block-styles
+*/
+
+@font-face {
+font-family: 'Roboto';
+src: url('./assets/fonts/Roboto-Regular.ttf')  format('truetype');
+font-display: swap;
+}
+
+body a { color: var(--brand); }
+body a:hover { color: var(--brand2); }
+
+
+/* Navigation CSS v.3.2.0 */
+
+.topNav form, .topNav input[type=search] { display: inline-block; }
+.topNav form { width: 100%; max-width: 130px; vertical-align: middle; }
+.topNav input[type=search] { font-size: small; min-height: 10px; height: 30px; }
+.topNav form ::placeholder { font-size: x-small; }
+.topNav form { margin-left: var(--padding); }
+
+.topNav button { margin: 0; }
+.topNav { text-align: center; }
+/*
+.topNav nav{
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(0, auto));
+margin: 0 auto;
+justify-content: center;
+align-items: center;
+text-align: center;
+}test delme*/
+
+.topNav nav{
+display: inline-block;
+width: auto;
+margin: 0 auto;
+justify-content: center;
+align-items: center;
+text-align: center;
+}
+
+/* fix for mobile */
+ @media only screen and (max-width: 500px){
+.topNav nav {
+justify-content: left;
+align-items: center;
+text-align: left;
+}
+.topNav { text-align: left; }
+.topNav button { margin-right: var(--padding); }
+.topNav form { margin-left: 0; }
+}
+
+.dropdownMenu {
+width: calc(100% - (2 * var(--bodyPadding)));
+/*delme test validator error max-width: calc(900px - (2 * var(--bodyPadding)));*/
+max-width: 900px;
+margin: 0 auto;
+position: absolute;
+left: 0;
+right: 0;
+z-index: 999;
+display: none;
+}
+
+.topNav .dropdownMenuButton { display: none; }
+
+.dropdownMenuButton svg {
+max-width: 14px;
+vertical-align: middle;
+fill: var(--brand) !important;
+stroke: var(--c3) !important;
+}
+
+
+.dropdownMenuColumn {
+text-align: left;
+/*columns: 120px auto;*/
+z-index: 2;
+margin-top: var(--padding);
+}
+.dropdownMenuContent a { display: inline-block; }
+
+/* fix */
+.dropdownMenuContentWrapper, .dropdownMenuContent { display: inline-block;  }
+.showDropdownMenu { display: block; }
+
+.topNav nav ul, .topNav nav li {
+padding: 0;
+margin: 0;
+display: inline;
+width: auto;
+list-style-type: none;
+}
+
+.topNav nav a {
+padding: var(--padding);
+}
+
+
+
+.logo, .logo2{
+position: relative;
+border-radius: 50%;
+display: inline-flex;
+vertical-align: middle;
+text-align: center;
+padding: 1px;
+border: 2px dashed color-mix(in srgb, var(--brand) 50%, transparent);
+opacity: 1;
+transition: transform .250s ease-in-out;
+width: 60px;
+}
+
+.logo:hover, .logo2:hover{
+transform: rotate(360deg);
+transition: transform 1.5s ease-in-out;
+}
+
+.logo2 { width: 26px; height: 26px; }
+
+@media (prefers-reduced-motion) {
+.logo:hover, .logo2:hover{ border-color: var(--c); }
+}
+
+#siteSearch {
+border-radius: 15px;
+}
+
+/* .screenReader in main.css */
+
+/* end Navigation CSS */
+
+
+
+.listBlock {
+padding: 0 var(--padding3);
+margin-bottom: var(--padding2);
+}
+.listItem {
+padding: var(--padding) 0;
+border-bottom: 2px dotted var(--d3);
+}
+
+
+
+
+
+/* WP style */
+.menu { display: block; margin: 0; padding: 0; }
+.menu-item, .page_item, .current-menu-item{
+margin: 0;
+padding: 0;
+display: inline;
+}
+
+.navMenu a,
+.navMenu2 a {
+border-bottom: 2px solid transparent;
+}
+.navMenu a:hover,
+.navMenu2 a:hover {
+border-bottom: 2px dotted var(--brand);
+}
+.topNav [aria-current="page"] {
+border-bottom: 2px dotted var(--brand);
+}
+
+
+.comment, .children {
+list-style-type: none;
+list-style: none;
+}
+
+.says {
+display: none;
+}
+
+.comment-author, .vcard, .comment-meta {
+display: inline-block;
+}
+.comment-body .vcard {
+font-size: 120%;
+display: inline-block;
+text-align: left;
+margin-right: var(--margin2);
+}
+
+
+.comment-body {
+border-bottom: 1px solid var(--d2);
+margin-bottom: var(--margin2);
+padding: var(--padding);
+}
+
+.comment-body .comment-meta {
+color: var(--c3);
+width: 100%;
+padding: var(--padding);
+
+display: block;
+margin: 0;
+padding: 0;
+font-size: small;
+}
+.comment-body .comment-meta a {
+display: inline-block;
+}
+
+
+.comment-meta .comment-edit-link{ color: var(--brand); }
+
+.comment-metadata {
+display: inline-block;
+margin: 0;
+padding: 0;
+}
+
+.comment-body .avatar {
+opacity: 0.9;
+margin-right: 5px;
+text-align: center;
+display: inline-block;
+justify-content: center;
+filter: grayscale(20%);
+
+justify-content: end;
+display: inline-flex;
+align-items: center;
+vertical-align: middle;
+height: auto;
+}
+
+
+
+
+
+.page-numbers {
+padding: var(--padding2);
+border: 2px solid var(--d);
+background: var(--l2);
+border-radius: var(--borderRadius2);
+display: inline-block;
+}
+
+.page-numbers:hover {
+background: var(--l3);
+}
+
+
+
+.tag-cloud-link {
+padding: var(--padding);
+}
+
+
+
+
+.alignleft {
+float: left;
+margin: var(--padding2);
+margin-left: 0;
+}
+
+.alignright {
+float: right;
+margin: var(--padding2);
+margin-right: 0;
+}
+
+
+
+/*https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote#*/
+blockquote p::before {
+  content: "\201C";
+}
+
+blockquote p::after {
+  content: "\201D";
+}
+/* fix nav, fix theme */
+
+
+.topNav .menu { display: inline-block; width: auto; }
+.topNav ul { display: inline-block; width: auto; }
+.dropdownMenuColumn { columns: unset; }
+
+.topNav #searchform, .topNav #searchform input[type=search] { display: inline-block; }
+.topNav #searchform { width: 100%; max-width: 130px; vertical-align: middle; }
+.topNav #searchform input { font-size: small; min-height: 10px; height: 30px; border-radius: var(--borderRadius3); }
+.topNav #searchform ::placeholder { font-size: x-small; }
+.topNav #searchform { margin-left: var(--padding); }
+.topNav #searchform input[type="submit"], .topNav .search-submit { display: none; }
+/* dublicate */
+.topNav .search-form, .topNav .search-form input[type=search] { display: inline-block; }
+.topNav .search-form { width: 100%; max-width: 130px; vertical-align: middle; }
+.topNav .search-form input { font-size: small; min-height: 10px; height: 30px; border-radius: var(--borderRadius3); }
+.topNav .search-form ::placeholder { font-size: x-small; }
+.topNav .search-form { margin-left: var(--padding); }
+.topNav .search-form input[type="submit"], .topNav .search-submit { display: none; }
+
+input[type="submit"] {  border: 1px solid var(--d3); background: var(--d); color: var(--c2); border-radius: var(--borderRadius); }
+input[type="submit"]:hover { background: var(--d2); color: var(--c3); }
+
+
+
+
+.wp-block-button__link { color: var(--c3R); }
+.wp-block-button__link:hover { color: var(--blue); }
+
+
+
+
+#wp-calendar a {
+font-weight: bold;
+}
+
+/* other fix, class fix
+https://developer.wordpress.org/advanced-administration/wordpress/css/# */
+.wp-caption {
+  background: var(--l2);
+  border: 1px solid var(--d2);
+  max-width: 96%; /* Image does not overflow the content area */
+  padding: 5px 3px 10px;
+  text-align: center;
+}
+
+.wp-caption-text {
+  font-size: 11px;
+  line-height: 17px;
+  margin: 0;
+  padding: 0 4px 5px;
+}
+
+
+
+
+
+
+
+
+
+.sticky h1::before, .sticky h2::before {
+content: "📌";
+display: inline-block;
+padding-right: 5px;
+}
+
+
+.gallery-caption {
+background: var(--l2);
+border: 1px solid var(--d2);
+border-radius: var(--borderRadius2);
+padding: var(--padding2);
+font-size: medium;
+display: block;
+}
+
+.aligncenter {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: safe center;
+align-self: safe center;
+align-content: center;
+
+margin: 0 auto;
+}
+
+.keepTagList a { padding-right: 0; }
+
+/* delme for original */
+pre { white-space: pre-wrap; word-wrap: break-word; line-height: normal; }
+
+.trackback,
+.pingback {
+list-style-type: none;
+}
+
+.bypostauthor { }
