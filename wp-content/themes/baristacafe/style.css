@@ -1,0 +1,29 @@
+/*
+Theme Name: Barista Cafe
+Theme URI: https://example.com/barista-cafe
+Author: Your Name
+Author URI: https://example.com
+Description: A custom WordPress theme for Barista Cafe
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: barista-cafe
+Tags: cafe, restaurant, coffee, responsive
+*/
+
+/* Basic WordPress styles */
+.wp-block {
+    max-width: 100%;
+}
+
+.alignwide {
+    margin-left: -100px;
+    margin-right: -100px;
+}
+
+.alignfull {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    max-width: 100vw;
+    width: 100vw;
+}
