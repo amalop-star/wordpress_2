@@ -11,7 +11,7 @@ if (!empty($categories)) : ?>
         <div class="container">
             <div class="row justify-content-center">
 
-                <div class="col-lg-12 col-12 text-center mb-4 pb-lg-2">
+                <div class="col-lg-12 col-md-6  col-12 text-center mb-4 pb-lg-2">
                     <em class="text-white">Explore</em>
                     <h2 class="text-white">Our Categories</h2>
                 </div>
@@ -49,9 +49,16 @@ if (!empty($categories)) : ?>
                             </div>
                         </div>
                     </div>
+
                 <?php
                 endforeach;
                 ?>
+                <div class="col-12 text-center mt-4">
+                    <a href="<?php echo esc_url(home_url('index.php/categories/')); ?>" class="btn btn-outline-light">
+                        View All Categories
+                    </a>
+
+                </div>
             </div>
         </div>
     </section>

@@ -27,5 +27,20 @@ function mytheme_register_menus()
         'footer_menu'  => __('Footer Menu', 'mytheme'),
     ));
 }
-
 add_action('after_setup_theme', 'mytheme_register_menus');
+
+// Enable featured image support
+if (!function_exists('theme_setup')) {
+    function theme_setup() {
+        // Add theme support for post thumbnails
+        add_theme_support('post-thumbnails');
+        
+        // Optional: Set default thumbnail size
+        set_post_thumbnail_size(800, 600, true);
+        
+        // Optional: Add custom image sizes
+        add_image_size('post-thumbnail', 800, 600, true);
+        add_image_size('large', 1024, 768, true);
+    }
+}
+add_action('after_setup_theme', 'theme_setup');

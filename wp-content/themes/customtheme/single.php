@@ -14,8 +14,10 @@
                                 </div>
                             <?php endif; ?>
 
-                            <div class="post-content">
-                                <?php the_content(); ?>
+                            <div class="post-content ">
+                                <div class="mb-4 text-white">
+                                    <?php the_content(); ?>
+                                </div>
                                 <?php
                                 $post_tags = get_the_tags();
                                 if ($post_tags) :

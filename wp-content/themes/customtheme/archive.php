@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center text-white mb-5">
-                <h1 class="mb-3">
+                <h1 class="mb-3 text-white">
                     <?php
                     if (is_category()) {
                         single_cat_title();

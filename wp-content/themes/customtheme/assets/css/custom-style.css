@@ -1,0 +1,9 @@
+.page-numbers{
+    color: white !important;
+}
+.pagination-wrap{
+    margin-right: 20px;
+    text-align: right;
+    display: flex;
+    float: right;
+}
