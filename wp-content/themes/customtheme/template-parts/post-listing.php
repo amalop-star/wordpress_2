@@ -2,7 +2,6 @@
     <div class="container">
         <div class="row">
             <?php
-            // Custom query to show only 4 latest posts
             $latest_posts = new WP_Query([
                 'post_type'      => 'post',
                 'posts_per_page' => 2,
