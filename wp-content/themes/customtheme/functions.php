@@ -141,3 +141,10 @@ function create_news_tags_taxonomy()
     register_taxonomy('news_tag', array('news'), $args);
 }
 add_action('init', 'create_news_tags_taxonomy');
+
+
+
+
+require_once get_template_directory() . '/contact-form.php';
+
+

@@ -1,34 +1,34 @@
 <?php
-$categories = get_categories([
-    'orderby' => 'name',
-    'order'   => 'ASC',
+// Fetch News Categories (your custom taxonomy)
+$news_categories = get_terms([
+    'taxonomy'   => 'news_category',
+    'orderby'    => 'name',
+    'order'      => 'ASC',
     'hide_empty' => false,
-    'exclude' => 1,
 ]);
-
-if (!empty($categories)) : ?>
-    <section class="barista-section section-padding section-bg" id="barista-team">
-        <div class="container">
+if (!empty($news_categories) && !is_wp_error($news_categories)) : ?>
+    <section class="barista-section section-padding section-bg" id="news-categories">
+        <div>
             <div class="row justify-content-center">
 
-                <div class="col-lg-12 col-md-6  col-12 text-center mb-4 pb-lg-2">
+                <div class="col-lg-12 col-md-6 col-12 text-center mb-4 pb-lg-2">
                     <em class="text-white">Explore</em>
-                    <h2 class="text-white">Our Categories</h2>
+                    <h2 class="text-white">News Categories</h2>
                 </div>
-
-                <?php
-                foreach ($categories as $category) :
-                    $thumbnail_id = get_term_meta($category->term_id, 'thumbnail_id', true);
-                    $image_url = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : get_template_directory_uri() . '/assets/images/team/portrait-elegant-old-man-wearing-suit.jpg';
-                    $category_link = get_category_link($category->term_id);
+                <?php foreach ($news_categories as $category) :
+                    $category_link = get_term_link($category);
                 ?>
-                    <div class="col-lg-3 col-md-6 col-12 mb-4">
-                        <div class="team-block-wrap">
-                            <div class="team-block-info d-flex flex-column">
-                                <div class="category-heading d-flex mt-auto mb-3">
-                                    <h4 class="text-white mb-0"><?php echo esc_html($category->name); ?></h4>
-                                    <p class="badge ms-4"><em><?php echo $category->count; ?> Posts</em></p>
-                                </div>
+                    <div class="col-lg-2 col-md-4 col-12 mb-4">
+                        <div class="card bg-dark text-white h-100 border-0 shadow-sm team-block-info">
+                            <div class="card-body text-center">
+                                <h4 class="card-title mb-2">
+                                    <a href="<?php echo esc_url($category_link); ?>" class="text-white text-decoration-none">
+                                        <?php echo esc_html($category->name); ?>
+                                    </a>
+                                </h4>
+                                <p class="badge bg-secondary">
+                                    <em><?php echo intval($category->count); ?> News</em>
+                                </p>
 
                                 <p class="text-white mb-3">
                                     <?php
@@ -41,24 +41,17 @@ if (!empty($categories)) : ?>
                                     Read More →
                                 </a>
                             </div>
-
-                            <div class="team-block-image-wrap">
-                                <a href="<?php echo esc_url($category_link); ?>">
-                                    <img src="<?php echo esc_url($image_url); ?>" class="team-block-image img-fluid" alt="<?php echo esc_attr($category->name); ?>">
-                                </a>
-                            </div>
                         </div>
                     </div>
+                <?php endforeach; ?>
 
-                <?php
-                endforeach;
-                ?>
                 <div class="col-12 text-center mt-4">
-                    <a href="<?php echo esc_url(home_url('index.php/categories/')); ?>" class="btn btn-outline-light">
+                    <a href="<?php echo esc_url(get_permalink(get_page_by_path('news-categories'))); ?>" class="btn btn-outline-light">
                         View All Categories
                     </a>
 
                 </div>
+
             </div>
         </div>
     </section>

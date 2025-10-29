@@ -36,7 +36,7 @@ get_header();
                                 <h4 class="text-white"><?php echo esc_html($category->name); ?></h4>
                                 <div class="menu-block text-white">
                                     <?php
-                                    $description = $category->description ?: 'Explore posts in this category.';
+                                    $description = $category->description ?: 'Explore News in this category.';
                                     echo esc_html(wp_trim_words($description, 15, '...'));
                                     ?>
                                     <a href="<?php echo esc_url($category_link); ?>" class="btn btn-outline-light mt-3">Read More</a>

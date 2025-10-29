@@ -13,6 +13,7 @@
                     'orderby' => 'name',
                     'order' => 'ASC',
                     'hide_empty' => false,
+                    'taxonomy' => 'news_tag'
                 ]);
 
                 if (!empty($tags)) :
@@ -20,7 +21,7 @@
                     foreach ($tags as $tag) :
                         $side = ($side === 'left') ? 'right' : 'left';
                         $image_url = get_template_directory_uri() . '/assets/images/reviews/young-woman-with-round-glasses-yellow-sweater.jpg';
-                        $desc = $tag->description ? wp_trim_words($tag->description, 20) : 'Explore posts under this tag.';
+                        $desc = $tag->description ? wp_trim_words($tag->description, 20) : 'Explore News under this tag.';
                 ?>
                         <div class="timeline-container timeline-container-<?php echo esc_attr($side); ?>">
                             <div class="timeline-content">

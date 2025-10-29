@@ -43,7 +43,7 @@
                 <?php endwhile;
             else : ?>
                 <div class="col-12 text-center">
-                    <p class="text-white">Sorry, no post found.</p>
+                    <p class="text-white">Sorry, no News found.</p>
                 </div>
             <?php endif; ?>
         </div>

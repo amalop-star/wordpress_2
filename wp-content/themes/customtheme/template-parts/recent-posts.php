@@ -16,14 +16,12 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-lg-5 col-12 mt-4 mt-lg-0 mx-auto">
                 <em class="text-white">Latest from Our Blog</em>
-                <h2 class="text-white mb-3">Recent Posts</h2>
-
+                <h2 class="text-white mb-3">Recent News</h2>
                 <?php
                 $recent_posts = new WP_Query([
-                    'post_type' => 'post',
+                    'post_type' => 'news',
                     'posts_per_page' => 2,
                     'post_status' => 'publish',
                 ]);
@@ -48,9 +46,9 @@
                     <?php endwhile;
                     wp_reset_postdata();
                 else : ?>
-                    <p class="text-white">No recent posts found.</p>
+                    <p class="text-white">No recent News found.</p>
                 <?php endif; ?>
-                <a class="smoothscroll btn custom-btn custom-border-btn mt-3 mb-4" href="#section_3"> View All Posts </a>
+                <a class="smoothscroll btn custom-btn custom-border-btn mt-3 mb-4" href="#section_3"> View All News </a>
 
             </div>
         </div>

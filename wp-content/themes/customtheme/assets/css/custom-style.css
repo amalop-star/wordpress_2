@@ -1,9 +1,46 @@
-.page-numbers{
+.page-numbers {
     color: white !important;
 }
-.pagination-wrap{
+
+.pagination-wrap {
     margin-right: 20px;
     text-align: right;
     display: flex;
     float: right;
+}
+
+
+.custom-bg {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.custom-contact-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.custom-contact-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: black
+}
+
+.custom-contact-form .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #504949 !important;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.custom-contact-form .form-control:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+}
+
+.custom-contact-form .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    cursor: pointer;
 }
