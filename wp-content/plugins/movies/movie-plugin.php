@@ -20,27 +20,24 @@ class Custom_Movies_Plugin {
     private $page_id = null;
     
     public function __construct() {
-        // Register custom post type and taxonomies
         add_action('init', array($this, 'register_movie_post_type'));
         add_action('init', array($this, 'register_movie_taxonomies'));
         
-        // Create movies page on plugin activation
         register_activation_hook(__FILE__, array($this, 'activate_plugin'));
         
-        // Delete movies page and posts on plugin deactivation
         register_deactivation_hook(__FILE__, array($this, 'deactivate_plugin'));
         
-        // Add movies page to navigation menu
         add_filter('wp_nav_menu_items', array($this, 'add_movies_to_menu'), 10, 2);
         
-        // Enqueue styles
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         
-        // Add admin menu
         add_action('admin_menu', array($this, 'add_admin_menu'));
         
-        // Add shortcode to page content filter
         add_filter('the_content', array($this, 'inject_movies_content'));
+        
+        add_filter('the_content', array($this, 'inject_single_movie_content'));
+        
+        add_action('init', array($this, 'maybe_flush_rewrites'), 999);
     }
     
     /**
@@ -72,7 +69,7 @@ class Custom_Movies_Plugin {
             'label'                 => __('Movie', 'custom-movies'),
             'description'           => __('Movies custom post type', 'custom-movies'),
             'labels'                => $labels,
-            'supports'              => array('title', 'editor', 'thumbnail', 'excerpt', 'comments'),
+            'supports'              => array('title', 'editor', 'thumbnail', 'excerpt', 'comments', 'author'),
             'taxonomies'            => array('movie_category', 'movie_tag'),
             'hierarchical'          => false,
             'public'                => true,
@@ -86,6 +83,7 @@ class Custom_Movies_Plugin {
             'has_archive'           => true,
             'exclude_from_search'   => false,
             'publicly_queryable'    => true,
+            'rewrite'               => array('slug' => 'movie', 'with_front' => false),
             'capability_type'       => 'post',
             'show_in_rest'          => true,
         );
@@ -97,7 +95,6 @@ class Custom_Movies_Plugin {
      * Register Custom Taxonomies for Movies
      */
     public function register_movie_taxonomies() {
-        // Register Movie Categories
         $category_labels = array(
             'name'              => _x('Movie Categories', 'taxonomy general name', 'custom-movies'),
             'singular_name'     => _x('Movie Category', 'taxonomy singular name', 'custom-movies'),
@@ -124,7 +121,6 @@ class Custom_Movies_Plugin {
         
         register_taxonomy('movie_category', array('movie'), $category_args);
         
-        // Register Movie Tags
         $tag_labels = array(
             'name'              => _x('Movie Tags', 'taxonomy general name', 'custom-movies'),
             'singular_name'     => _x('Movie Tag', 'taxonomy singular name', 'custom-movies'),
@@ -154,11 +150,9 @@ class Custom_Movies_Plugin {
      * Activate Plugin - Create Movies Page
      */
     public function activate_plugin() {
-        // Check if movies page already exists
         $page = get_page_by_path('movies');
         
         if (!$page) {
-            // Create the movies page
             $page_id = wp_insert_post(array(
                 'post_title'    => 'Movies',
                 'post_name'     => 'movies',
@@ -173,22 +167,31 @@ class Custom_Movies_Plugin {
             update_option('custom_movies_page_id', $page->ID);
         }
         
-        // Flush rewrite rules
+        update_option('custom_movies_flush_rewrite_rules', true);
+        
         flush_rewrite_rules();
+    }
+    
+    /**
+     * Maybe flush rewrite rules if plugin was just activated
+     */
+    public function maybe_flush_rewrites() {
+        if (get_option('custom_movies_flush_rewrite_rules')) {
+            flush_rewrite_rules();
+            delete_option('custom_movies_flush_rewrite_rules');
+        }
     }
     
     /**
      * Deactivate Plugin - Delete Movies Page and All Movie Posts
      */
     public function deactivate_plugin() {
-        // Delete the movies page
         $movies_page_id = get_option('custom_movies_page_id');
         if ($movies_page_id) {
-            wp_delete_post($movies_page_id, true); // true = force delete, skip trash
+            wp_delete_post($movies_page_id, true); 
             delete_option('custom_movies_page_id');
         }
         
-        // Delete all movie posts
         $movies = get_posts(array(
             'post_type'      => 'movie',
             'posts_per_page' => -1,
@@ -196,10 +199,9 @@ class Custom_Movies_Plugin {
         ));
         
         foreach ($movies as $movie) {
-            wp_delete_post($movie->ID, true); // true = force delete, skip trash
+            wp_delete_post($movie->ID, true); 
         }
         
-        // Delete all movie categories
         $categories = get_terms(array(
             'taxonomy'   => 'movie_category',
             'hide_empty' => false,
@@ -211,7 +213,6 @@ class Custom_Movies_Plugin {
             }
         }
         
-        // Delete all movie tags
         $tags = get_terms(array(
             'taxonomy'   => 'movie_tag',
             'hide_empty' => false,
@@ -223,7 +224,6 @@ class Custom_Movies_Plugin {
             }
         }
         
-        // Flush rewrite rules
         flush_rewrite_rules();
     }
     
@@ -248,10 +248,22 @@ class Custom_Movies_Plugin {
         $movies_page_id = get_option('custom_movies_page_id');
         
         if (is_page($movies_page_id)) {
-            // Get movies listing
             $movies_content = $this->get_movies_listing();
-            // Append to existing content or replace if empty
             return $content . $movies_content;
+        }
+        
+        return $content;
+    }
+    
+    /**
+     * Inject single movie details into the content
+     */
+    public function inject_single_movie_content($content) {
+        if (is_singular('movie') && is_main_query() && in_the_loop()) {
+            if (doing_filter('the_content')) {
+                $movie_details = $this->get_single_movie_details();
+                return $content . $movie_details;
+            }
         }
         
         return $content;
@@ -263,7 +275,6 @@ class Custom_Movies_Plugin {
     public function get_movies_listing() {
         ob_start();
         
-        // Query movies
         $paged = get_query_var('paged') ? get_query_var('paged') : 1;
         
         $args = array(
@@ -361,11 +372,159 @@ class Custom_Movies_Plugin {
     }
     
     /**
+     * Get single movie details HTML
+     */
+    public function get_single_movie_details() {
+        ob_start();
+        
+        global $post;
+        ?>
+        <div class="single-movie-wrapper">
+            <div class="single-movie-header">
+                <?php if (has_post_thumbnail()) : ?>
+                    <div class="single-movie-poster">
+                        <?php the_post_thumbnail('large'); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <div class="single-movie-summary">
+                    <div class="movie-taxonomy-section">
+                        <?php
+                        $categories = get_the_terms(get_the_ID(), 'movie_category');
+                        if ($categories && !is_wp_error($categories)) :
+                            ?>
+                            <div class="taxonomy-group">
+                                <span class="taxonomy-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 7h16M4 12h16M4 17h16"/>
+                                    </svg>
+                                    Categories:
+                                </span>
+                                <div class="taxonomy-items">
+                                    <?php foreach ($categories as $category) : ?>
+                                        <a href="<?php echo get_term_link($category); ?>" class="taxonomy-badge category-badge">
+                                            <?php echo esc_html($category->name); ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php
+                        $tags = get_the_terms(get_the_ID(), 'movie_tag');
+                        if ($tags && !is_wp_error($tags)) :
+                            ?>
+                            <div class="taxonomy-group">
+                                <span class="taxonomy-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                    </svg>
+                                    Tags:
+                                </span>
+                                <div class="taxonomy-items">
+                                    <?php foreach ($tags as $tag) : ?>
+                                        <a href="<?php echo get_term_link($tag); ?>" class="taxonomy-badge tag-badge">
+                                            <?php echo esc_html($tag->name); ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="movie-additional-info">
+                        <div class="info-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <span>Published: <strong><?php echo get_the_date(); ?></strong></span>
+                        </div>
+                        
+                        <?php if (get_the_author()) : ?>
+                        <div class="info-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            <span>Added by: <strong><?php the_author(); ?></strong></span>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if (comments_open() || get_comments_number()) : ?>
+                        <div class="info-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            <span>Comments: <strong><?php echo get_comments_number(); ?></strong></span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="single-movie-navigation">
+                <div class="nav-buttons-wrapper">
+                    <?php
+                    $prev_post = get_previous_post();
+                    $next_post = get_next_post();
+                    ?>
+                    
+                    <?php if ($prev_post) : ?>
+                        <a href="<?php echo get_permalink($prev_post->ID); ?>" class="nav-btn prev-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                            <span>
+                                <small>Previous</small>
+                                <strong><?php echo wp_trim_words($prev_post->post_title, 5); ?></strong>
+                            </span>
+                        </a>
+                    <?php endif; ?>
+                    
+                    <a href="<?php echo get_permalink(get_option('custom_movies_page_id')); ?>" class="nav-btn back-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12 19 5 12 12 5"/>
+                        </svg>
+                        <span>All Movies</span>
+                    </a>
+                    
+                    <?php if ($next_post) : ?>
+                        <a href="<?php echo get_permalink($next_post->ID); ?>" class="nav-btn next-btn">
+                            <span>
+                                <small>Next</small>
+                                <strong><?php echo wp_trim_words($next_post->post_title, 5); ?></strong>
+                            </span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
+            <?php if (has_excerpt()) : ?>
+            <div class="single-movie-excerpt">
+                <h3>Synopsis</h3>
+                <p><?php echo get_the_excerpt(); ?></p>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        
+        return ob_get_clean();
+    }
+    
+    /**
      * Enqueue front-end styles
      */
     public function enqueue_styles() {
         $movies_page_id = get_option('custom_movies_page_id');
-        if (is_page($movies_page_id)) {
+        if (is_page($movies_page_id) || is_singular('movie')) {
             wp_enqueue_style('custom-movies-style', plugin_dir_url(__FILE__) . 'css/movies-style.css', array(), '1.0.0');
         }
     }
@@ -413,6 +572,5 @@ class Custom_Movies_Plugin {
     }
 }
 
-// Initialize the plugin
 new Custom_Movies_Plugin();
 ?>
